@@ -1,6 +1,12 @@
+
 ## Overview
 
-Traccar Client is an iOS GPS tracking application. It can work with Traccar open source server software.
+Free open source GPS Tracking application.
+
+This Traccar Client is an iOS GPS tracking application which forked from lazy original(Based on 5.16).
+
+It can be worked with any of your HTTP/HTTP based own WAS or Web Server(All data being sent as GET method).
+
 
 ## Build
 
@@ -9,10 +15,6 @@ Project uses CocoaPods for dependencies management. To build the project you nee
 ```
 pod install
 ```
-
-## Team
-
-- Anton Tananaev ([anton@traccar.org](mailto:anton@traccar.org))
 
 ## License
 
