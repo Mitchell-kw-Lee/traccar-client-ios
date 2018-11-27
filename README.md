@@ -1,7 +1,3 @@
-# [Traccar Client for iOS](https://www.traccar.org/client)
-
-[![Download on the App Store](http://www.tananaev.com/badges/app-store.svg)](https://itunes.apple.com/app/traccar-client/id843156974)
-
 ## Overview
 
 Traccar Client is an iOS GPS tracking application. It can work with Traccar open source server software.
