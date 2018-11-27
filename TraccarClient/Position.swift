@@ -29,6 +29,7 @@ public class Position: NSManagedObject {
     @NSManaged public var course: NSNumber?
     @NSManaged public var battery: NSNumber?
     @NSManaged public var accuracy: NSNumber?
+    @NSManaged public var auth: String?
     
     public convenience init(managedObjectContext context: NSManagedObjectContext) {
         let entityDescription = NSEntityDescription.entity(forEntityName: "Position", in: context)

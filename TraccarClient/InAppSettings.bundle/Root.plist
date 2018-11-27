@@ -75,6 +75,16 @@
 			<string>frequency_preference</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Force Frequency</string>
+			<key>Key</key>
+			<string>force_frequency_preference</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
 			<key>KeyboardType</key>
 			<string>NumberPad</string>
 			<key>DefaultValue</key>
@@ -97,6 +107,22 @@
 			<string>Angle</string>
 			<key>Key</key>
 			<string>angle_preference</string>
+		</dict>
+		<dict>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>IsSecure</key>
+			<true/>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Authorization</string>
+			<key>Key</key>
+			<string>auth_preference</string>
 		</dict>
 	</array>
 </dict>

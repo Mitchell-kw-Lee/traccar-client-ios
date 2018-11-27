@@ -18,12 +18,38 @@ import Foundation
 
 public class RequestManager: NSObject {
     
-    public static func sendRequest(_ url: URL, completionHandler handler: @escaping (Bool) -> Void) {
+    public static func sendRequest(_ url: URL, auth:String, completionHandler handler: @escaping (Bool) -> Void) {
+		let loginString = auth
+		let loginData = loginString.data(using: String.Encoding.utf8)!
+		let base64LoginString = loginData.base64EncodedString()
+
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+        request.httpMethod = "GET"
+        request.setValue("Basic \(base64LoginString)", forHTTPHeaderField: "Authorization")
+        
         NSURLConnection.sendAsynchronousRequest(request, queue: OperationQueue.main, completionHandler: {(response, data, connectionError) -> Void in
             handler(data != nil)
         })
+
+/*
+		//swift 2
+	    var request = NSMutableURLRequest(URL: NSURL(string: "YOUR URL")!)
+	    var session = NSURLSession.sharedSession()
+	    request.HTTPMethod = "POST"
+
+	    var params = ["username":"username", "password":"password"] as Dictionary<String, String>
+
+	    request.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(params, options: [])
+
+	    request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+	    request.addValue("application/json", forHTTPHeaderField: "Accept")
+
+	    var task = session.dataTaskWithRequest(request, completionHandler: {(response, data, connectionError) -> Void in
+            handler(data != nil)
+        })
+
+	    task.resume()
+*/
     }
 
 }

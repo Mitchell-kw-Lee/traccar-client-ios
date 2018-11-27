@@ -2,7 +2,9 @@
 "Service created" = "Service created";
 "Service destroyed" = "Service destroyed";
 "Send failed" = "Send failed";
+"Send success" = "Send success";
 "Location update" = "Location update";
+"Location ignored" = "Location ignored";
 "Connectivity change" = "Connectivity change";
 "Invalid server address" = "Invalid server address";
 "Invalid server port" = "Invalid server port";

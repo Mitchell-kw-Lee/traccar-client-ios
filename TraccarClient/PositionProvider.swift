@@ -32,6 +32,8 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
     var interval: Double
     var distance: Double
     var angle: Double
+    var auth: String
+    var isForceFrequency: Bool
     
     override init() {
         let userDefaults = UserDefaults.standard
@@ -39,15 +41,17 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
         interval = userDefaults.double(forKey: "frequency_preference")
         distance = userDefaults.double(forKey: "distance_preference")
         angle = userDefaults.double(forKey: "angle_preference")
+        auth = userDefaults.string(forKey: "auth_preference")
+        isForceFrequency = userDefaults.bool(forKey: "force_frequency_preference")
 
         locationManager = CLLocationManager()
-        
+
         super.init()
 
         locationManager.delegate = self
 
         locationManager.pausesLocationUpdatesAutomatically = false
-        
+
         switch userDefaults.string(forKey: "accuracy_preference") ?? "medium" {
         case "high":
             locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -56,12 +60,14 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
         default:
             locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         }
+        
+		locationManager.distanceFilter = isForceFrequency ? 0 : (float) distance  // In meters.
 
         if #available(iOS 9.0, *) {
             locationManager.allowsBackgroundLocationUpdates = true
         }
     }
-    
+
     func startUpdates() {
         switch CLLocationManager.authorizationStatus() {
         case .notDetermined, .restricted, .denied:
@@ -94,20 +100,43 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        var diffDistance: Double = lastLocation != nil ? DistanceCalculator.distance(fromLat: location.coordinate.latitude, fromLon: location.coordinate.longitude, toLat: lastLocation!.coordinate.latitude, toLon: lastLocation!.coordinate.longitude) : 0;
+        var diffBearing: Double = lastLocation != nil ? fabs(location.course - lastLocation!.course) : 0;
+
         if let location = locations.last {
-            if lastLocation == nil
-                || location.timestamp.timeIntervalSince(lastLocation!.timestamp) >= interval
-                || (distance > 0 && DistanceCalculator.distance(fromLat: location.coordinate.latitude, fromLon: location.coordinate.longitude, toLat: lastLocation!.coordinate.latitude, toLon: lastLocation!.coordinate.longitude) >= distance)
-                || (angle > 0 && fabs(location.course - lastLocation!.course) >= angle) {
-                
-                let position = Position(managedObjectContext: DatabaseHelper().managedObjectContext)
+            if lastLocation == nil 
+                //|| location.timestamp.timeIntervalSince(lastLocation!.timestamp) >= interval
+                //|| (distance > 0 && DistanceCalculator.distance(fromLat: location.coordinate.latitude, fromLon: location.coordinate.longitude, toLat: lastLocation!.coordinate.latitude, toLon: lastLocation!.coordinate.longitude) >= distance)
+                //|| (angle > 0 && fabs(location.course - lastLocation!.course) >= angle) 
+                ||
+                (
+                    location.timestamp.timeIntervalSince(lastLocation!.timestamp) >= interval
+                    &&
+                        (
+                            isForceFrequency
+                            ||
+                            (
+                                    distance > 0 ? diffDistance >= distance : true
+                                    ||
+                                    angle > 0 ? diffBearing >= angle : true
+                            )
+                        )
+                )                
+            {
+                let position = Position(managedObjectContext: DatabaseHelper().managedObjectContext, auth: auth)
                 position.deviceId = deviceId
                 position.setLocation(location)
                 position.battery = getBatteryLevel() as NSNumber
+                position.auth = auth;
+
                 delegate?.didUpdate(position: position)
+
                 lastLocation = location
+            }else{
+            	StatusViewController.addMessage(NSLocalizedString("Location ignored", comment: ""))
             }
+        }else{
+        	//null data
         }
     }
-
 }
