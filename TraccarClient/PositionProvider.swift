@@ -41,7 +41,7 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
         interval = userDefaults.double(forKey: "frequency_preference")
         distance = userDefaults.double(forKey: "distance_preference")
         angle = userDefaults.double(forKey: "angle_preference")
-        auth = userDefaults.string(forKey: "auth_preference")
+        auth = userDefaults.string(forKey: "auth_preference")!
         isForceFrequency = userDefaults.bool(forKey: "force_frequency_preference")
 
         locationManager = CLLocationManager()
@@ -61,7 +61,7 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
             locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         }
         
-		locationManager.distanceFilter = isForceFrequency ? 0 : (float) distance  // In meters.
+		locationManager.distanceFilter = isForceFrequency ? 0 : distance  // In meters.
 
         if #available(iOS 9.0, *) {
             locationManager.allowsBackgroundLocationUpdates = true
@@ -100,10 +100,11 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        var diffDistance: Double = lastLocation != nil ? DistanceCalculator.distance(fromLat: location.coordinate.latitude, fromLon: location.coordinate.longitude, toLat: lastLocation!.coordinate.latitude, toLon: lastLocation!.coordinate.longitude) : 0;
-        var diffBearing: Double = lastLocation != nil ? fabs(location.course - lastLocation!.course) : 0;
 
         if let location = locations.last {
+            var diffDistance: Double = lastLocation != nil ? DistanceCalculator.distance(fromLat: location.coordinate.latitude, fromLon: location.coordinate.longitude, toLat: lastLocation!.coordinate.latitude, toLon: lastLocation!.coordinate.longitude) : 0;
+            var diffBearing: Double = lastLocation != nil ? fabs(location.course - lastLocation!.course) : 0;
+            
             if lastLocation == nil 
                 //|| location.timestamp.timeIntervalSince(lastLocation!.timestamp) >= interval
                 //|| (distance > 0 && DistanceCalculator.distance(fromLat: location.coordinate.latitude, fromLon: location.coordinate.longitude, toLat: lastLocation!.coordinate.latitude, toLon: lastLocation!.coordinate.longitude) >= distance)
@@ -123,7 +124,7 @@ class PositionProvider: NSObject, CLLocationManagerDelegate {
                         )
                 )                
             {
-                let position = Position(managedObjectContext: DatabaseHelper().managedObjectContext, auth: auth)
+                let position = Position(managedObjectContext: DatabaseHelper().managedObjectContext)
                 position.deviceId = deviceId
                 position.setLocation(location)
                 position.battery = getBatteryLevel() as NSNumber

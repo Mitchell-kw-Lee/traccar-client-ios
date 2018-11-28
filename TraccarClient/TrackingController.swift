@@ -112,7 +112,7 @@ class TrackingController: NSObject, PositionProviderDelegate, NetworkManagerDele
     
     func send(_ position: Position) {
         let request = ProtocolFormatter.formatPostion(position, url: url)
-        RequestManager.sendRequest(request, position.auth, completionHandler: {(_ success: Bool) -> Void in
+        RequestManager.sendRequest(request, auth: position.auth!, completionHandler: {(_ success: Bool) -> Void in
             if success {
             	StatusViewController.addMessage(NSLocalizedString("Send success", comment: ""))
                 self.delete(position)
